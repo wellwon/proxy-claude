@@ -78,16 +78,22 @@ else
     echo -e "  ${DIM}Отредактируй: nano $PROXY_DIR/profiles.conf${NC}"
 fi
 
-# 3. Генерация .env (пароль для web-панели)
+# 3. Генерация .env (пароль для web-панели = пароль команды)
 echo -e "${CYAN}[3/5]${NC} Настраиваю пароль web-панели..."
 if [ -f "$PROXY_DIR/.env" ]; then
     echo -e "  ${YELLOW}→${NC} .env уже существует, пропускаю"
 else
-    # Генерируем случайный пароль
-    GENERATED_PASS=$(openssl rand -base64 12 | tr -d '/+=')
-    echo "APP_PASSWORD=$GENERATED_PASS" > "$PROXY_DIR/.env"
-    echo -e "  ${GREEN}✓${NC} Пароль web-панели: ${BOLD}$GENERATED_PASS${NC}"
-    echo -e "  ${DIM}Сохрани его! Изменить: nano $PROXY_DIR/.env${NC}"
+    if [ -n "$TEAM_PASS" ]; then
+        # Используем тот же пароль команды
+        echo "APP_PASSWORD=$TEAM_PASS" > "$PROXY_DIR/.env"
+        echo -e "  ${GREEN}✓${NC} Пароль web-панели = пароль команды"
+    else
+        # Нет пароля команды — генерируем случайный
+        GENERATED_PASS=$(openssl rand -base64 12 | tr -d '/+=')
+        echo "APP_PASSWORD=$GENERATED_PASS" > "$PROXY_DIR/.env"
+        echo -e "  ${GREEN}✓${NC} Пароль web-панели: ${BOLD}$GENERATED_PASS${NC}"
+        echo -e "  ${DIM}Сохрани его! Изменить: nano $PROXY_DIR/.env${NC}"
+    fi
 fi
 
 # 4. Добавить в ~/.zshrc
