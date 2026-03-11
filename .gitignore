@@ -1,6 +1,7 @@
 # Конфиг с реальными паролями — НИКОГДА не коммитить
 profiles.conf
 active
+.env
 
 # macOS
 .DS_Store

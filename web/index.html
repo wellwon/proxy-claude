@@ -15,486 +15,405 @@
   .container { max-width: 720px; margin: 0 auto; }
   .mono { font-family: 'SF Mono', ui-monospace, monospace; }
 
-  /* ── Header ── */
-  .header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 24px; }
+  /* Header */
+  .header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
   .header-left { display: flex; align-items: center; gap: 10px; }
-  .header h1 { font-size: 20px; font-weight: 600; }
-  .header .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--text2); transition: all 0.3s; }
-  .header .dot.on { background: var(--green); box-shadow: 0 0 8px var(--green); }
-  .header .dot.off { background: var(--yellow); }
+  .header h1 { font-size: 18px; font-weight: 700; letter-spacing: 0.5px; }
+  .dot { width: 10px; height: 10px; border-radius: 50%; background: var(--text3); transition: all 0.3s; flex-shrink: 0; }
+  .dot.on { background: var(--green); box-shadow: 0 0 8px var(--green); }
+  .dot.off { background: var(--yellow); }
+  .git-btns { display: flex; gap: 6px; }
+  .git-btn { padding: 4px 10px; border-radius: 5px; border: 1px solid var(--border); background: transparent; color: var(--text3); font-size: 11px; font-weight: 600; cursor: pointer; transition: all 0.15s; text-transform: uppercase; letter-spacing: 0.5px; }
+  .git-btn:hover { border-color: var(--blue); color: var(--text); }
+  .git-btn:disabled { opacity: 0.3; pointer-events: none; }
+  .git-btn.has-changes { border-color: var(--yellow); color: var(--yellow); }
 
-  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-bottom: 16px; position: relative; }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px; margin-bottom: 16px; }
 
-  /* ── Status card ── */
-  .status-top { display: flex; align-items: flex-start; justify-content: space-between; }
-  .status-main { display: flex; align-items: center; gap: 16px; flex: 1; }
-  .status-flag { font-size: 44px; line-height: 1; }
+  /* Status */
+  .status-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+  .status-main { display: flex; align-items: center; gap: 14px; flex: 1; }
+  .status-flag { font-size: 42px; line-height: 1; }
   .status-ip { font-size: 24px; font-weight: 700; font-family: 'SF Mono', monospace; }
-  .badge { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 6px; font-size: 12px; font-weight: 600; }
+  .badge { display: inline-flex; align-items: center; gap: 5px; padding: 3px 9px; border-radius: 5px; font-size: 11px; font-weight: 600; }
   .badge.proxy { background: rgba(0,210,106,0.15); color: var(--green); }
   .badge.direct { background: rgba(255,165,2,0.15); color: var(--yellow); }
+  .btn-off { padding: 5px 12px; border-radius: 6px; border: 1px solid rgba(255,71,87,0.3); background: transparent; color: var(--red); font-size: 11px; font-weight: 500; cursor: pointer; transition: all 0.15s; white-space: nowrap; }
+  .btn-off:hover { background: rgba(255,71,87,0.1); border-color: var(--red); }
+  .btn-off:disabled { opacity: 0.25; pointer-events: none; }
+  .status-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--border); }
+  .si { display: flex; flex-direction: column; gap: 1px; }
+  .sl { font-size: 9px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.5px; }
+  .sv { font-size: 13px; font-weight: 500; }
 
-  .btn-disconnect { padding: 6px 14px; border-radius: 8px; border: 1px solid rgba(255,71,87,0.3); background: transparent; color: var(--red); font-size: 12px; font-weight: 500; cursor: pointer; transition: all 0.15s; white-space: nowrap; }
-  .btn-disconnect:hover { background: rgba(255,71,87,0.1); border-color: var(--red); }
-  .btn-disconnect:disabled { opacity: 0.3; pointer-events: none; }
+  .sh { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+  .st { font-size: 12px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.5px; }
+  .slink { font-size: 11px; color: var(--blue); cursor: pointer; background: none; border: none; padding: 0; }
+  .slink:hover { text-decoration: underline; }
 
-  .status-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border); }
-  .status-item { display: flex; flex-direction: column; gap: 1px; }
-  .status-label { font-size: 10px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.5px; }
-  .status-value { font-size: 14px; font-weight: 500; }
+  /* Profiles */
+  .plist { display: flex; flex-direction: column; gap: 5px; }
+  .pi { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; transition: border-color 0.15s; }
+  .pi:hover { border-color: rgba(59,130,246,0.3); }
+  .pi.active { border-color: var(--green); }
+  .pi.expanded { border-color: var(--blue); }
+  .pi.active.expanded { border-color: var(--green); }
 
-  .section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
-  .section-title { font-size: 13px; color: var(--text2); text-transform: uppercase; letter-spacing: 0.5px; }
-  .section-link { font-size: 12px; color: var(--blue); cursor: pointer; text-decoration: none; border: none; background: none; padding: 0; }
-  .section-link:hover { text-decoration: underline; }
+  .prow { display: flex; align-items: center; justify-content: space-between; padding: 10px 14px; cursor: pointer; }
+  .prow:hover { background: rgba(255,255,255,0.015); }
+  .pleft { display: flex; align-items: center; gap: 10px; flex: 1; min-width: 0; }
+  .pflag { font-size: 20px; line-height: 1; width: 26px; text-align: center; }
+  .pflag .lf { width: 20px; height: 14px; background: var(--border); border-radius: 2px; display: inline-block; }
+  .pname { font-weight: 600; font-size: 13px; }
+  .pbadges { display: flex; gap: 4px; align-items: center; margin-top: 2px; }
+  .ptag { font-size: 10px; padding: 1px 6px; border-radius: 3px; font-family: 'SF Mono', monospace; background: rgba(255,255,255,0.06); color: var(--text2); }
+  .ploc { font-size: 11px; color: var(--text3); margin-top: 1px; }
+  .pstatus { font-size: 10px; padding: 2px 8px; border-radius: 4px; font-weight: 600; flex-shrink: 0; }
+  .pi.active .pstatus { background: var(--green); color: #000; }
 
-  /* ── Profiles ── */
-  .profile-list { display: flex; flex-direction: column; gap: 6px; }
-  .profile-item { background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; transition: border-color 0.15s; }
-  .profile-item:hover { border-color: rgba(59,130,246,0.3); }
-  .profile-item.active { border-color: var(--green); }
-  .profile-item.expanded { border-color: var(--blue); }
+  /* Expanded */
+  .pdetails { display: none; padding: 0 14px 14px; }
+  .pi.expanded .pdetails { display: block; }
+  .dgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; margin-bottom: 10px; }
+  .di { display: flex; align-items: center; justify-content: space-between; padding: 7px 10px; background: var(--bg); border-radius: 5px; }
+  .dleft { display: flex; flex-direction: column; gap: 0; min-width: 0; flex: 1; }
+  .dlabel { font-size: 9px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.3px; }
+  .dval { font-size: 12px; font-family: 'SF Mono', monospace; font-weight: 500; }
+  .cpb { flex-shrink: 0; width: 26px; height: 26px; display: flex; align-items: center; justify-content: center; border-radius: 4px; border: 1px solid var(--border); background: transparent; color: var(--text3); cursor: pointer; transition: all 0.15s; margin-left: 5px; }
+  .cpb:hover { border-color: var(--blue); color: var(--text); }
+  .cpb.ok { border-color: var(--green); color: var(--green); }
+  .cpb svg { width: 12px; height: 12px; }
 
-  .profile-row { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; cursor: pointer; transition: background 0.1s; }
-  .profile-row:hover { background: rgba(255,255,255,0.02); }
-  .profile-left { display: flex; align-items: center; gap: 12px; flex: 1; min-width: 0; }
-  .profile-flag { font-size: 22px; line-height: 1; width: 30px; text-align: center; }
-  .profile-flag .loading-flag { width: 22px; height: 16px; background: var(--border); border-radius: 3px; display: inline-block; }
-  .profile-info { display: flex; flex-direction: column; gap: 1px; min-width: 0; }
-  .profile-name { font-weight: 600; font-size: 14px; }
-  .profile-meta { font-size: 11px; color: var(--text2); }
-  .profile-status { font-size: 11px; padding: 2px 8px; border-radius: 4px; font-weight: 600; flex-shrink: 0; }
-  .profile-item.active .profile-status { background: var(--green); color: #000; }
-  .profile-item:not(.active) .profile-status { color: var(--text3); }
-
-  /* Expanded details */
-  .profile-details { display: none; padding: 0 16px 16px; }
-  .profile-item.expanded .profile-details { display: block; }
-
-  .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-bottom: 12px; }
-  .detail-item { display: flex; align-items: center; justify-content: space-between; padding: 8px 12px; background: var(--bg); border-radius: 6px; }
-  .detail-left { display: flex; flex-direction: column; gap: 1px; min-width: 0; flex: 1; }
-  .detail-label { font-size: 9px; color: var(--text3); text-transform: uppercase; letter-spacing: 0.5px; }
-  .detail-value { font-size: 13px; font-family: 'SF Mono', monospace; font-weight: 500; }
-  .cp-btn { flex-shrink: 0; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; border-radius: 5px; border: 1px solid var(--border); background: transparent; color: var(--text3); cursor: pointer; transition: all 0.15s; margin-left: 6px; }
-  .cp-btn:hover { border-color: var(--blue); color: var(--text); }
-  .cp-btn.ok { border-color: var(--green); color: var(--green); }
-  .cp-btn svg { width: 14px; height: 14px; }
-
-  .detail-actions { display: flex; gap: 8px; }
-  .btn { padding: 7px 14px; border-radius: 7px; border: 1px solid var(--border); background: var(--surface2); color: var(--text); font-size: 12px; font-weight: 500; cursor: pointer; transition: all 0.15s; }
+  .dacts { display: flex; align-items: center; gap: 6px; }
+  .dacts .spacer { flex: 1; }
+  .btn { padding: 6px 12px; border-radius: 6px; border: 1px solid var(--border); background: var(--surface2); color: var(--text); font-size: 11px; font-weight: 500; cursor: pointer; transition: all 0.15s; }
   .btn:hover { border-color: var(--blue); }
-  .btn:disabled { opacity: 0.4; pointer-events: none; }
+  .btn:disabled { opacity: 0.35; pointer-events: none; }
   .btn.green { border-color: var(--green); color: var(--green); }
   .btn.green:hover { background: rgba(0,210,106,0.1); }
   .btn.red { border-color: rgba(255,71,87,0.3); color: var(--red); }
   .btn.red:hover { background: rgba(255,71,87,0.1); border-color: var(--red); }
-  .btn.blue { border-color: var(--blue); color: var(--blue); }
-  .btn.blue:hover { background: rgba(59,130,246,0.1); }
-  .btn-copy-all { font-size: 11px; padding: 5px 10px; }
+  .btn.sm { font-size: 10px; padding: 4px 8px; }
 
-  /* Add form */
-  .add-bar { margin-top: 10px; }
-  .add-form { margin-top: 10px; padding: 14px; background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; display: none; }
+  /* Add */
+  .add-form { margin-top: 8px; padding: 12px; background: var(--surface2); border: 1px solid var(--border); border-radius: 8px; display: none; }
   .add-form.show { display: block; }
-  .add-form label { display: block; font-size: 10px; color: var(--text3); margin-bottom: 3px; text-transform: uppercase; letter-spacing: 0.5px; }
-  .add-form input, .add-form select { width: 100%; padding: 7px 10px; background: var(--bg); border: 1px solid var(--border); border-radius: 6px; color: var(--text); font-size: 13px; font-family: 'SF Mono', monospace; margin-bottom: 10px; }
+  .add-form label { display: block; font-size: 9px; color: var(--text3); margin-bottom: 2px; text-transform: uppercase; letter-spacing: 0.3px; }
+  .add-form input, .add-form select { width: 100%; padding: 6px 8px; background: var(--bg); border: 1px solid var(--border); border-radius: 5px; color: var(--text); font-size: 12px; font-family: 'SF Mono', monospace; margin-bottom: 8px; }
   .add-form input:focus, .add-form select:focus { outline: none; border-color: var(--blue); }
   .add-form select { font-family: -apple-system, sans-serif; }
-  .add-row { display: grid; grid-template-columns: 1fr auto; gap: 8px; }
-  .add-hint { font-size: 10px; color: var(--text3); margin-bottom: 10px; }
+  .add-hint { font-size: 10px; color: var(--text3); margin-bottom: 8px; }
+  .add-row { display: grid; grid-template-columns: 1fr auto; gap: 6px; }
 
   /* Services */
-  .services { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
-  .svc { display: flex; align-items: center; gap: 8px; padding: 7px 10px; background: var(--surface2); border-radius: 6px; font-size: 12px; }
-  .svc-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
-  .svc-dot.ok { background: var(--green); }
-  .svc-dot.reachable { background: var(--yellow); }
-  .svc-dot.dead, .svc-dot.error { background: var(--red); }
-  .svc-desc { font-size: 10px; color: var(--text3); }
-  .svc-hint { margin-top: 6px; font-size: 10px; color: var(--text3); }
+  .svcs { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; }
+  .svc { display: flex; align-items: center; gap: 7px; padding: 6px 10px; background: var(--surface2); border-radius: 5px; font-size: 12px; }
+  .sd { width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; }
+  .sd.ok { background: var(--green); }
+  .sd.reachable { background: var(--yellow); }
+  .sd.dead, .sd.error { background: var(--red); }
+  .svc-d { font-size: 10px; color: var(--text3); }
+  .svc-h { margin-top: 5px; font-size: 9px; color: var(--text3); }
 
   /* Modal */
-  .modal-bg { position: fixed; inset: 0; background: rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center; z-index: 200; opacity: 0; pointer-events: none; transition: opacity 0.2s; }
-  .modal-bg.show { opacity: 1; pointer-events: all; }
-  .modal { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 24px; max-width: 380px; width: 90%; }
-  .modal h3 { font-size: 15px; margin-bottom: 6px; }
-  .modal p { font-size: 13px; color: var(--text2); margin-bottom: 18px; line-height: 1.4; }
-  .modal-btns { display: flex; gap: 8px; justify-content: flex-end; }
+  .mbg { position: fixed; inset: 0; background: rgba(0,0,0,0.6); display: flex; align-items: center; justify-content: center; z-index: 200; opacity: 0; pointer-events: none; transition: opacity 0.2s; }
+  .mbg.show { opacity: 1; pointer-events: all; }
+  .mdl { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px; max-width: 360px; width: 90%; }
+  .mdl h3 { font-size: 14px; margin-bottom: 5px; }
+  .mdl p { font-size: 13px; color: var(--text2); margin-bottom: 16px; line-height: 1.4; }
+  .mdl-a { display: flex; gap: 8px; justify-content: flex-end; }
 
   /* Toast */
-  .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(20px); padding: 10px 20px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; font-size: 13px; opacity: 0; transition: all 0.3s; pointer-events: none; z-index: 100; }
+  .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(20px); padding: 8px 18px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; font-size: 12px; opacity: 0; transition: all 0.3s; pointer-events: none; z-index: 100; }
   .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
   .toast.success { border-color: var(--green); }
   .toast.info { border-color: var(--blue); }
   .toast.warn { border-color: var(--yellow); }
 
-  .spinner { display: inline-block; width: 14px; height: 14px; border: 2px solid var(--border); border-top-color: var(--blue); border-radius: 50%; animation: spin 0.6s linear infinite; vertical-align: middle; }
-  @keyframes spin { to { transform: rotate(360deg); } }
+  .spin { display: inline-block; width: 12px; height: 12px; border: 2px solid var(--border); border-top-color: var(--blue); border-radius: 50%; animation: sp 0.6s linear infinite; vertical-align: middle; }
+  @keyframes sp { to { transform: rotate(360deg); } }
+
+  /* Login */
+  .login-overlay { position: fixed; inset: 0; background: var(--bg); display: flex; align-items: center; justify-content: center; z-index: 500; }
+  .login-overlay.hidden { display: none; }
+  .login-box { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 36px 32px; max-width: 340px; width: 90%; text-align: center; }
+  .login-box h2 { font-size: 17px; margin-bottom: 4px; font-weight: 700; }
+  .login-sub { font-size: 12px; color: var(--text2); margin-bottom: 22px; }
+  .login-box input { width: 100%; padding: 10px 14px; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; color: var(--text); font-size: 15px; text-align: center; letter-spacing: 2px; margin-bottom: 12px; }
+  .login-box input:focus { outline: none; border-color: var(--blue); }
+  .login-btn { width: 100%; padding: 10px; border-radius: 8px; border: 1px solid var(--blue); background: rgba(59,130,246,0.1); color: var(--blue); font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.15s; }
+  .login-btn:hover { background: rgba(59,130,246,0.2); }
+  .login-btn:disabled { opacity: 0.5; pointer-events: none; }
+  .login-err { font-size: 11px; color: var(--red); margin-bottom: 8px; min-height: 16px; }
 
   @media (max-width: 500px) {
-    body { padding: 16px; }
-    .status-grid, .services, .detail-grid { grid-template-columns: 1fr; }
-    .status-main { gap: 10px; }
+    body { padding: 14px; }
+    .status-grid, .svcs, .dgrid { grid-template-columns: 1fr; }
     .status-ip { font-size: 18px; }
   }
 </style>
 </head>
 <body>
 
-<div class="container">
+<!-- Login overlay -->
+<div class="login-overlay" id="loginOverlay">
+  <div class="login-box">
+    <h2>TERMINAL PROXY</h2>
+    <div class="login-sub">Введите пароль для доступа</div>
+    <div class="login-err" id="loginErr"></div>
+    <input type="password" id="loginPw" placeholder="Пароль" autocomplete="current-password">
+    <button class="login-btn" id="loginBtn" onclick="doLogin()">Войти</button>
+  </div>
+</div>
+
+<div class="container" id="appContainer" style="display:none">
+
   <!-- Header -->
   <div class="header">
     <div class="header-left">
       <span class="dot" id="statusDot"></span>
       <h1>TERMINAL PROXY MANAGER</h1>
     </div>
-    <span style="font-size:13px;color:var(--text3);font-weight:600;letter-spacing:1px">WWT</span>
+    <div class="git-btns">
+      <button class="git-btn" id="gitCommit" onclick="gitCommit()" disabled>commit</button>
+      <button class="git-btn" id="gitPull" onclick="gitPull()" disabled>pull</button>
+    </div>
   </div>
 
-  <!-- Status: Current IP -->
-  <div class="card" id="statusCard">
+  <!-- Status -->
+  <div class="card">
     <div class="status-top">
       <div class="status-main">
         <span class="status-flag" id="flag">-</span>
         <div>
-          <div class="status-ip" id="ip">загрузка...</div>
+          <div class="status-ip" id="ip">...</div>
           <span class="badge" id="modeBadge">...</span>
         </div>
       </div>
-      <button class="btn-disconnect" id="offBtn" onclick="proxyOff()" disabled>Выключить прокси</button>
+      <button class="btn-off" id="offBtn" onclick="proxyOff()" disabled>Выключить прокси</button>
     </div>
     <div class="status-grid">
-      <div class="status-item">
-        <span class="status-label">Страна</span>
-        <span class="status-value" id="country">-</span>
-      </div>
-      <div class="status-item">
-        <span class="status-label">Город</span>
-        <span class="status-value" id="city">-</span>
-      </div>
-      <div class="status-item">
-        <span class="status-label">ISP</span>
-        <span class="status-value" id="isp">-</span>
-      </div>
-      <div class="status-item">
-        <span class="status-label">Профиль</span>
-        <span class="status-value" id="profile">-</span>
-      </div>
+      <div class="si"><span class="sl">Страна</span><span class="sv" id="country">-</span></div>
+      <div class="si"><span class="sl">Город</span><span class="sv" id="city">-</span></div>
+      <div class="si"><span class="sl">ISP</span><span class="sv" id="isp">-</span></div>
+      <div class="si"><span class="sl">Профиль</span><span class="sv" id="profile">-</span></div>
     </div>
   </div>
 
   <!-- Profiles -->
   <div class="card">
-    <div class="section-header">
-      <span class="section-title">Профили</span>
-      <button class="section-link" onclick="toggleAddForm()">+ Добавить</button>
+    <div class="sh">
+      <span class="st">Профили</span>
+      <button class="slink" onclick="toggleAdd()">+ добавить</button>
     </div>
-    <div class="profile-list" id="profiles">
-      <div style="color:var(--text3);font-style:italic;padding:8px 0">загрузка...</div>
-    </div>
-
+    <div class="plist" id="profiles"><div style="color:var(--text3);font-style:italic;font-size:12px">загрузка...</div></div>
     <div class="add-form" id="addForm">
       <label>Данные прокси</label>
       <input type="text" id="addRaw" placeholder="IP:PORT:LOGIN:PASS" autocomplete="off">
       <div class="add-hint">Формат: 23.229.62.156:8000:JMBKKJ:0nWAcm</div>
       <div class="add-row">
-        <div>
-          <label>Название (необязательно)</label>
-          <input type="text" id="addName" placeholder="авто по геолокации" autocomplete="off" style="margin-bottom:0">
-        </div>
-        <div>
-          <label>Протокол</label>
-          <select id="addProto" style="margin-bottom:0"><option value="http">HTTP</option><option value="socks5">SOCKS5</option></select>
-        </div>
+        <div><label>Название</label><input type="text" id="addName" placeholder="авто" autocomplete="off" style="margin-bottom:0"></div>
+        <div><label>Протокол</label><select id="addProto" style="margin-bottom:0"><option value="http">HTTP</option><option value="socks5">SOCKS5</option></select></div>
       </div>
-      <div style="display:flex;gap:8px;margin-top:10px">
-        <button class="btn blue" onclick="submitAdd()" id="submitAddBtn">Добавить</button>
-        <button class="btn" onclick="toggleAddForm()">Отмена</button>
+      <div style="display:flex;gap:6px;margin-top:8px">
+        <button class="btn green" onclick="submitAdd()" id="addBtn">Добавить</button>
+        <button class="btn" onclick="toggleAdd()">Отмена</button>
       </div>
     </div>
   </div>
 
   <!-- Services -->
   <div class="card">
-    <div class="section-header">
-      <span class="section-title">Доступность сервисов</span>
-      <button class="section-link" onclick="loadServices()" id="svcRefresh">обновить</button>
+    <div class="sh">
+      <span class="st">Доступность сервисов</span>
+      <button class="slink" onclick="loadSvc()" id="svcR">обновить</button>
     </div>
-    <div class="services" id="services">
-      <div style="color:var(--text3);font-style:italic">проверка...</div>
-    </div>
-    <div class="svc-hint">Проверяет доступность через текущее соединение. Зелёный — работает, жёлтый — доступен (нужен API ключ), красный — не отвечает.</div>
+    <div class="svcs" id="svcs"><div style="color:var(--text3);font-size:12px"><span class="spin"></span></div></div>
+    <div class="svc-h">Зелёный = работает, жёлтый = доступен (нужен ключ), красный = не отвечает</div>
   </div>
 </div>
 
 <!-- Delete modal -->
-<div class="modal-bg" id="delModal">
-  <div class="modal">
-    <h3>Удалить профиль?</h3>
-    <p>Профиль <strong id="delName"></strong> будет удалён навсегда.</p>
-    <div class="modal-btns">
-      <button class="btn" onclick="closeDelModal()">Отмена</button>
-      <button class="btn red" onclick="confirmDel()">Удалить</button>
-    </div>
-  </div>
-</div>
+<div class="mbg" id="delM"><div class="mdl"><h3>Удалить профиль?</h3><p>Профиль <strong id="delN"></strong> будет удалён.</p><div class="mdl-a"><button class="btn" onclick="closeDel()">Отмена</button><button class="btn red" onclick="doDel()">Удалить</button></div></div></div>
 
 <div class="toast" id="toast"></div>
 
 <script>
-const API = '';
-let toastTmr = null;
-let delTarget = null;
-let expanded = null; // currently expanded profile name
+const A='';
+let tT=null, delTgt=null, exp=null, profs=[];
 
-function fl(cc) {
-  if (!cc || cc.length !== 2) return '';
-  return String.fromCodePoint(...cc.toUpperCase().split('').map(c => 0x1F1E6 + c.charCodeAt(0) - 65));
+function fl(cc){if(!cc||cc.length!==2)return'';return String.fromCodePoint(...cc.toUpperCase().split('').map(c=>0x1F1E6+c.charCodeAt(0)-65));}
+const CSvg='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>';
+const OSvg='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>';
+
+// Status
+function applySt(d){
+  if(!d||!d.connected){$('ip').textContent='Нет соединения';$('statusDot').className='dot off';$('offBtn').disabled=true;return;}
+  const f=fl(d.countryCode);
+  $('ip').textContent=d.ip;$('flag').textContent=f;
+  $('country').textContent=f+' '+d.country+' ('+d.countryCode+')';
+  $('city').textContent=d.city+', '+d.region;
+  $('isp').textContent=d.isp;$('profile').textContent=d.profile||'— нет';
+  if(d.proxy){$('statusDot').className='dot on';$('modeBadge').className='badge proxy';$('modeBadge').textContent='\u{1f6e1}\ufe0f PROXY';$('offBtn').disabled=false;}
+  else{$('statusDot').className='dot off';$('modeBadge').className='badge direct';$('modeBadge').textContent='\u26a1 DIRECT';$('offBtn').disabled=true;}
+}
+async function loadSt(){try{applySt(await(await fetch(A+'/api/status')).json());}catch(e){$('ip').textContent='Ошибка';}}
+
+// Profiles
+async function loadP(){
+  try{
+    const d=await(await fetch(A+'/api/profiles')).json();profs=d.profiles;renP();
+    for(const p of profs)if(!p.geo)fetchGeo(p.name);
+  }catch(e){$('profiles').innerHTML='<div style="color:var(--text3);font-size:12px">Ошибка</div>';}
 }
 
-const CP_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>';
-const OK_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>';
-
-// ── Status ──
-function applyStatus(d) {
-  if (!d || !d.connected) {
-    document.getElementById('ip').textContent = 'Нет соединения';
-    document.getElementById('statusDot').className = 'dot off';
-    document.getElementById('offBtn').disabled = true;
-    return;
-  }
-  const f = fl(d.countryCode);
-  document.getElementById('ip').textContent = d.ip;
-  document.getElementById('flag').textContent = f;
-  document.getElementById('country').textContent = f + ' ' + d.country + ' (' + d.countryCode + ')';
-  document.getElementById('city').textContent = d.city + ', ' + d.region;
-  document.getElementById('isp').textContent = d.isp;
-  document.getElementById('profile').textContent = d.profile || '— нет';
-  const dot = document.getElementById('statusDot');
-  const badge = document.getElementById('modeBadge');
-  if (d.proxy) {
-    dot.className = 'dot on';
-    badge.className = 'badge proxy';
-    badge.textContent = '\u{1f6e1}\ufe0f PROXY';
-    document.getElementById('offBtn').disabled = false;
-  } else {
-    dot.className = 'dot off';
-    badge.className = 'badge direct';
-    badge.textContent = '\u26a1 DIRECT';
-    document.getElementById('offBtn').disabled = true;
-  }
-}
-
-async function loadStatus() {
-  try { applyStatus(await (await fetch(API+'/api/status')).json()); }
-  catch(e) { document.getElementById('ip').textContent = 'Ошибка'; }
-}
-
-// ── Profiles ──
-let profilesData = [];
-
-async function loadProfiles() {
-  try {
-    const d = await (await fetch(API+'/api/profiles')).json();
-    profilesData = d.profiles;
-    renderProfiles();
-    // Lazy load geo for profiles without cached geo
-    for (const p of d.profiles) {
-      if (!p.geo) fetchProfileGeo(p.name);
-    }
-  } catch(e) {
-    document.getElementById('profiles').innerHTML = '<div style="color:var(--text3)">Ошибка</div>';
-  }
-}
-
-function renderProfiles() {
-  const el = document.getElementById('profiles');
-  if (!profilesData.length) {
-    el.innerHTML = '<div style="color:var(--text3);padding:8px 0">Нет профилей. Нажми "+ Добавить"</div>';
-    return;
-  }
-  el.innerHTML = profilesData.map(p => {
-    const geo = p.geo;
-    const f = geo ? fl(geo.countryCode) : '';
-    const loc = geo ? (geo.city + ', ' + geo.country) : '';
-    const isExp = expanded === p.name;
-    const isAct = p.active;
-
-    return `
-    <div class="profile-item ${isAct?'active':''} ${isExp?'expanded':''}" id="pi-${p.name}">
-      <div class="profile-row" onclick="toggleProfile('${p.name}')">
-        <div class="profile-left">
-          <span class="profile-flag">${f || '<span class=loading-flag></span>'}</span>
-          <div class="profile-info">
-            <div class="profile-name">${p.name}</div>
-            <div class="profile-meta">${p.protocol}://${p.host}${loc ? ' — '+loc : ''}</div>
+function renP(){
+  const el=$('profiles');
+  if(!profs.length){el.innerHTML='<div style="color:var(--text3);font-size:12px">Нет профилей</div>';return;}
+  el.innerHTML=profs.map(p=>{
+    const g=p.geo,f=g?fl(g.countryCode):'',loc=g?(g.city+', '+g.country):'';
+    const isE=exp===p.name,isA=p.active;
+    return`<div class="pi ${isA?'active':''} ${isE?'expanded':''}" id="pi-${p.name}">
+      <div class="prow" onclick="togP('${p.name}')">
+        <div class="pleft">
+          <span class="pflag">${f||'<span class=lf></span>'}</span>
+          <div>
+            <div class="pname">${p.name}</div>
+            <div class="pbadges"><span class="ptag">${p.ip}</span><span class="ptag">${p.port}</span><span class="ptag">${p.protocol}</span></div>
+            ${loc?`<div class="ploc">${loc}</div>`:''}
           </div>
         </div>
-        <span class="profile-status">${isAct ? '\u25cf активен' : ''}</span>
+        ${isA?'<span class="pstatus">\u25cf активен</span>':''}
       </div>
-      <div class="profile-details">
-        <div class="detail-grid">
-          ${credCell('IP-адрес', p.ip, p.name+'ip')}
-          ${credCell('Порт', p.port, p.name+'port')}
-          ${credCell('Логин', p.login, p.name+'login')}
-          ${credCell('Пароль', p.password, p.name+'pass')}
+      <div class="pdetails">
+        <div class="dgrid">
+          ${dc('IP-адрес',p.ip,p.name+'i')}${dc('Порт',p.port,p.name+'p')}
+          ${dc('Логин',p.login,p.name+'l')}${dc('Пароль',p.password,p.name+'w')}
         </div>
-        <div class="detail-actions">
-          ${isAct
-            ? '<button class="btn" disabled style="opacity:0.5">Уже активен</button>'
-            : `<button class="btn green" onclick="event.stopPropagation();switchTo('${p.name}')">Включить</button>`
-          }
-          <button class="btn red" onclick="event.stopPropagation();askDel('${p.name}')">Удалить</button>
-          <button class="btn btn-copy-all" onclick="event.stopPropagation();cpAll('${p.name}')">Скопировать всё</button>
+        <div class="dacts">
+          ${isA
+            ?`<button class="btn red" onclick="ev(event);proxyOff()">Отключить</button>`
+            :`<button class="btn green" onclick="ev(event);swTo('${p.name}')">Включить</button>`}
+          <button class="btn sm" onclick="ev(event);cpAll('${p.name}')">Скопировать всё</button>
+          <span class="spacer"></span>
+          <button class="btn red sm" onclick="ev(event);askDel('${p.name}')">Удалить</button>
         </div>
       </div>
     </div>`;
   }).join('');
 }
 
-function credCell(label, value, id) {
-  if (!value) return `<div class="detail-item"><div class="detail-left"><span class="detail-label">${label}</span><span class="detail-value">—</span></div></div>`;
-  return `<div class="detail-item"><div class="detail-left"><span class="detail-label">${label}</span><span class="detail-value">${value}</span></div><button class="cp-btn" id="cp-${id}" onclick="event.stopPropagation();cp('${value}','cp-${id}','${label}')">${CP_SVG}</button></div>`;
+function dc(l,v,id){
+  if(!v)return`<div class="di"><div class="dleft"><span class="dlabel">${l}</span><span class="dval">—</span></div></div>`;
+  return`<div class="di"><div class="dleft"><span class="dlabel">${l}</span><span class="dval">${v}</span></div><button class="cpb" id="c-${id}" onclick="ev(event);cp('${v}','c-${id}','${l}')">${CSvg}</button></div>`;
+}
+function togP(n){exp=(exp===n)?null:n;renP();}
+function ev(e){e.stopPropagation();}
+
+async function fetchGeo(n){
+  try{const d=await(await fetch(A+'/api/profile-geo/'+encodeURIComponent(n))).json();
+    if(d.countryCode){const p=profs.find(x=>x.name===n);if(p){p.geo=d;renP();}}}catch(e){}
 }
 
-function toggleProfile(name) {
-  expanded = (expanded === name) ? null : name;
-  renderProfiles();
+// Switch
+async function swTo(n){
+  toast('Подключение...','info',15000);
+  try{const d=await(await fetch(A+'/api/switch/'+encodeURIComponent(n))).json();
+    if(d.ok){if(d.status)applySt(d.status);toast('Подключено: '+n,'success');loadP();loadSvc();}
+    else{toast(d.error,'warn');loadP();}}catch(e){toast('Ошибка','warn');loadP();}
+}
+async function proxyOff(){
+  $('offBtn').disabled=true;toast('Отключение...','info',15000);
+  try{const d=await(await fetch(A+'/api/off')).json();
+    if(d.status)applySt(d.status);toast('Прокси выключен','warn');loadP();loadSvc();}
+  catch(e){toast('Ошибка','warn');loadP();}
 }
 
-async function fetchProfileGeo(name) {
-  try {
-    const d = await (await fetch(API+'/api/profile-geo/'+encodeURIComponent(name))).json();
-    if (d.countryCode) {
-      const p = profilesData.find(x => x.name === name);
-      if (p) { p.geo = d; renderProfiles(); }
-    }
-  } catch(e) {}
+// Delete
+function askDel(n){delTgt=n;$('delN').textContent=n;$('delM').classList.add('show');}
+function closeDel(){$('delM').classList.remove('show');delTgt=null;}
+async function doDel(){if(!delTgt)return;const n=delTgt;closeDel();toast('Удаление...','info');
+  try{const d=await(await fetch(A+'/api/delete/'+encodeURIComponent(n))).json();
+    if(d.ok){toast(n+' удалён','success');exp=null;loadP();loadSt();loadSvc();}else toast(d.error,'warn');}catch(e){toast('Ошибка','warn');}}
+
+// Add
+function toggleAdd(){const f=$('addForm');f.classList.toggle('show');if(f.classList.contains('show'))$('addRaw').focus();}
+async function submitAdd(){
+  const raw=$('addRaw').value.trim(),name=$('addName').value.trim(),proto=$('addProto').value;
+  if(!raw){toast('Введите данные','warn');return;}
+  const b=$('addBtn');b.disabled=true;b.innerHTML='<span class="spin"></span>';toast('Добавление...','info',15000);
+  try{const r=await fetch(A+'/api/add',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({raw,name,protocol:proto})});
+    const d=await r.json();if(d.ok){toast('Добавлен: '+d.name,'success');$('addRaw').value='';$('addName').value='';$('addForm').classList.remove('show');loadP();}else toast(d.error,'warn');}
+  catch(e){toast('Ошибка','warn');}b.disabled=false;b.textContent='Добавить';
 }
 
-// ── Switch ──
-async function switchTo(name) {
-  const el = document.getElementById('pi-'+name);
-  if (el) el.classList.add('switching');
-  toast('Подключение к '+name+'...', 'info', 15000);
-  try {
-    const d = await (await fetch(API+'/api/switch/'+encodeURIComponent(name))).json();
-    if (d.ok) {
-      if (d.status) applyStatus(d.status);
-      toast('Подключено: '+name, 'success');
-      loadProfiles(); loadServices();
-    } else { toast(d.error,'warn'); loadProfiles(); }
-  } catch(e) { toast('Ошибка','warn'); loadProfiles(); }
+// Copy
+function cp(t,id,l){navigator.clipboard.writeText(t).then(()=>{const b=$(id);if(b){b.innerHTML=OSvg;b.classList.add('ok');setTimeout(()=>{b.innerHTML=CSvg;b.classList.remove('ok');},1200);}toast(l+' скопирован','success');});}
+function cpAll(n){const p=profs.find(x=>x.name===n);if(!p)return;navigator.clipboard.writeText(`IP: ${p.ip}\nPort: ${p.port}\nLogin: ${p.login}\nPassword: ${p.password}\nProtocol: ${p.protocol}`).then(()=>toast('Скопировано','success'));}
+
+// Services
+async function loadSvc(){
+  const el=$('svcs'),b=$('svcR');b.textContent='...';
+  el.innerHTML='<div style="color:var(--text3)"><span class="spin"></span></div>';
+  try{const d=await(await fetch(A+'/api/services')).json();
+    el.innerHTML=d.services.map(s=>`<div class="svc"><span class="sd ${s.status}"></span><div><div>${s.name} <span style="color:var(--text3);font-size:10px">${s.code}</span></div><div class="svc-d">${s.desc}${s.status==='reachable'?' (нужен ключ)':''}</div></div></div>`).join('');}
+  catch(e){el.innerHTML='<div style="color:var(--text3);font-size:12px">Ошибка</div>';}b.textContent='обновить';
 }
 
-async function proxyOff() {
-  document.getElementById('offBtn').disabled = true;
-  toast('Отключение...','info',15000);
-  try {
-    const d = await (await fetch(API+'/api/off')).json();
-    if (d.status) applyStatus(d.status);
-    toast('Прокси выключен','warn');
-    loadProfiles(); loadServices();
-  } catch(e) { toast('Ошибка','warn'); loadProfiles(); }
+// Git
+async function checkGit(){
+  try{const d=await(await fetch(A+'/api/git/status')).json();
+    if(d.initialized){$('gitCommit').disabled=!d.changed;$('gitPull').disabled=!d.hasRemote;if(d.changed)$('gitCommit').classList.add('has-changes');else $('gitCommit').classList.remove('has-changes');}
+  }catch(e){}}
+
+async function gitCommit(){
+  $('gitCommit').disabled=true;toast('Commit + push...','info',15000);
+  try{const r=await fetch(A+'/api/git/commit',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({message:'Update proxy config'})});
+    const d=await r.json();if(d.ok)toast(d.message,'success');else toast(d.error,'warn');}
+  catch(e){toast('Ошибка','warn');}checkGit();
+}
+async function gitPull(){
+  $('gitPull').disabled=true;toast('Pull + deploy...','info',15000);
+  try{const d=await(await fetch(A+'/api/git/pull',{method:'POST'})).json();
+    if(d.ok)toast(d.message,'success');else toast(d.error,'warn');}
+  catch(e){toast('Ошибка','warn');}checkGit();
 }
 
-// ── Delete ──
-function askDel(n) { delTarget=n; document.getElementById('delName').textContent=n; document.getElementById('delModal').classList.add('show'); }
-function closeDelModal() { document.getElementById('delModal').classList.remove('show'); delTarget=null; }
-async function confirmDel() {
-  if (!delTarget) return;
-  const n=delTarget; closeDelModal();
-  toast('Удаление '+n+'...','info',5000);
-  try {
-    const d = await (await fetch(API+'/api/delete/'+encodeURIComponent(n))).json();
-    if (d.ok) { toast(n+' удалён','success'); expanded=null; loadProfiles(); loadStatus(); loadServices(); }
-    else toast(d.error,'warn');
-  } catch(e) { toast('Ошибка','warn'); }
-}
+// Toast & helpers
+function toast(m,t='info',d=3000){const e=$('toast');e.textContent=m;e.className='toast show '+t;clearTimeout(tT);tT=setTimeout(()=>e.classList.remove('show'),d);}
+function $(id){return document.getElementById(id);}
 
-// ── Add ──
-function toggleAddForm() {
-  const f=document.getElementById('addForm');
-  f.classList.toggle('show');
-  if (f.classList.contains('show')) document.getElementById('addRaw').focus();
-}
-
-async function submitAdd() {
-  const raw=document.getElementById('addRaw').value.trim();
-  const name=document.getElementById('addName').value.trim();
-  const proto=document.getElementById('addProto').value;
-  if (!raw) { toast('Введите данные прокси','warn'); return; }
-  const btn=document.getElementById('submitAddBtn');
-  btn.disabled=true; btn.innerHTML='<span class="spinner"></span>';
-  toast('Добавление...','info',15000);
-  try {
-    const r = await fetch(API+'/api/add', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({raw,name,protocol:proto})});
-    const d = await r.json();
-    if (d.ok) {
-      toast('Добавлен: '+d.name,'success');
-      document.getElementById('addRaw').value='';
-      document.getElementById('addName').value='';
-      document.getElementById('addForm').classList.remove('show');
-      loadProfiles();
-    } else toast(d.error,'warn');
-  } catch(e) { toast('Ошибка','warn'); }
-  btn.disabled=false; btn.textContent='Добавить';
-}
-
-// ── Copy ──
-function cp(text, btnId, label) {
-  navigator.clipboard.writeText(text).then(() => {
-    const b=document.getElementById(btnId);
-    if(b){b.innerHTML=OK_SVG;b.classList.add('ok');setTimeout(()=>{b.innerHTML=CP_SVG;b.classList.remove('ok')},1500);}
-    toast(label+' скопирован','success');
-  });
-}
-
-function cpAll(name) {
-  const p = profilesData.find(x=>x.name===name);
-  if (!p) return;
-  navigator.clipboard.writeText(`IP: ${p.ip}\nPort: ${p.port}\nLogin: ${p.login}\nPassword: ${p.password}\nProtocol: ${p.protocol}`).then(()=>toast('Все данные скопированы','success'));
-}
-
-// ── Services ──
-async function loadServices() {
-  const el=document.getElementById('services');
-  const btn=document.getElementById('svcRefresh');
-  btn.textContent='...';
-  el.innerHTML='<div style="color:var(--text3)"><span class="spinner"></span></div>';
-  try {
-    const d = await (await fetch(API+'/api/services')).json();
-    el.innerHTML = d.services.map(s => `
-      <div class="svc">
-        <span class="svc-dot ${s.status}"></span>
-        <div>
-          <div>${s.name} <span style="color:var(--text3);font-size:10px">${s.code}</span></div>
-          <div class="svc-desc">${s.desc}${s.status==='reachable'?' (нужен API ключ)':''}</div>
-        </div>
-      </div>
-    `).join('');
-  } catch(e) { el.innerHTML='<div style="color:var(--text3)">Ошибка</div>'; }
-  btn.textContent='обновить';
-}
-
-// ── Toast ──
-function toast(msg,type='info',dur=3000) {
-  const t=document.getElementById('toast');
-  t.textContent=msg; t.className='toast show '+type;
-  clearTimeout(toastTmr);
-  toastTmr=setTimeout(()=>t.classList.remove('show'),dur);
-}
-
-// ── Keys ──
-document.addEventListener('keydown', e => {
-  if (e.key==='Enter' && document.getElementById('addForm').classList.contains('show')) submitAdd();
-  if (e.key==='Escape') { closeDelModal(); document.getElementById('addForm').classList.remove('show'); }
+document.addEventListener('keydown',e=>{
+  if(e.key==='Enter'&&$('addForm').classList.contains('show'))submitAdd();
+  if(e.key==='Escape'){closeDel();$('addForm').classList.remove('show');}
 });
 
-// ── Init ──
-loadStatus(); loadProfiles(); loadServices();
-setInterval(loadStatus, 30000);
+// Auth
+async function checkAuth(){
+  try{const d=await(await fetch(A+'/api/auth/check')).json();return d.authenticated;}
+  catch(e){return false;}
+}
+async function doLogin(){
+  const pw=$('loginPw').value;
+  if(!pw){$('loginErr').textContent='Введите пароль';return;}
+  const b=$('loginBtn');b.disabled=true;b.textContent='...';$('loginErr').textContent='';
+  try{
+    const r=await fetch(A+'/api/auth/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({password:pw})});
+    const d=await r.json();
+    if(d.ok){$('loginOverlay').classList.add('hidden');$('appContainer').style.display='';initApp();}
+    else{$('loginErr').textContent=d.error||'Ошибка';}
+  }catch(e){$('loginErr').textContent='Ошибка соединения';}
+  b.disabled=false;b.textContent='Войти';
+}
+$('loginPw').addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
+
+function initApp(){loadSt();loadP();loadSvc();checkGit();setInterval(loadSt,30000);setInterval(checkGit,15000);}
+
+// Init: check auth first
+(async()=>{
+  if(await checkAuth()){$('loginOverlay').classList.add('hidden');$('appContainer').style.display='';initApp();}
+  else{$('loginPw').focus();}
+})();
 </script>
 </body>
 </html>

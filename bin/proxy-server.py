@@ -1,21 +1,57 @@
 #!/usr/bin/env python3
 """proxy-server.py — WellWon Proxy Manager (localhost:7777)"""
 
+import hashlib
+import http.cookies
 import http.server
 import json
 import os
 import re
+import secrets
 import subprocess
 import urllib.parse
 from pathlib import Path
 
 PROXY_DIR = Path(os.environ.get("PROXY_DIR", Path.home() / ".proxy"))
-PROJECT_DIR = Path(__file__).resolve().parent.parent  # project root for git ops
+PROJECT_DIR = Path(os.environ.get("PROJECT_DIR", Path(__file__).resolve().parent.parent))
 CONF = PROXY_DIR / "profiles.conf"
 ACTIVE = PROXY_DIR / "active"
 GEO_CACHE = PROXY_DIR / "geo-cache.json"
 WEB_DIR = PROXY_DIR / "web"
 PORT = 7777
+
+# ── Auth ──
+def _load_env():
+    """Load .env from project dir or PROXY_DIR."""
+    for d in [PROJECT_DIR, PROXY_DIR]:
+        env_file = d / ".env"
+        if env_file.exists():
+            for line in env_file.read_text().splitlines():
+                line = line.strip()
+                if not line or line.startswith("#"):
+                    continue
+                if "=" in line:
+                    k, v = line.split("=", 1)
+                    os.environ.setdefault(k.strip(), v.strip())
+            return
+
+_load_env()
+APP_PASSWORD = os.environ.get("APP_PASSWORD", "")
+# Session token: random per server start, valid only if password matches
+_SESSION_SECRET = secrets.token_hex(16)
+
+def _make_token():
+    """Create a session token tied to the current password."""
+    return hashlib.sha256((_SESSION_SECRET + APP_PASSWORD).encode()).hexdigest()
+
+def _check_auth(handler):
+    """Return True if request is authenticated."""
+    if not APP_PASSWORD:
+        return True  # no password set — open access
+    cookie_header = handler.headers.get("Cookie", "")
+    cookies = http.cookies.SimpleCookie(cookie_header)
+    token = cookies.get("session")
+    return token is not None and token.value == _make_token()
 
 # In-memory geo cache: {profile_name: {countryCode, country, city, ...}}
 _geo_cache = {}
@@ -114,6 +150,8 @@ def get_geo(proxy_url=None):
     cmd = ["curl", "-s", "--max-time", "8"]
     if proxy_url:
         cmd += ["-x", proxy_url, "--noproxy", ""]
+    else:
+        cmd += ["--noproxy", "*"]  # ignore env proxy vars — get REAL direct IP
     cmd.append("http://ip-api.com/json/?fields=status,country,countryCode,regionName,city,isp,org,query")
     try:
         result = subprocess.run(cmd, capture_output=True, text=True, timeout=12)
@@ -138,6 +176,8 @@ def test_services(proxy_url=None):
         cmd = ["curl", "-s", "-o", "/dev/null", "-w", "%{http_code}", "--max-time", "5"]
         if proxy_url:
             cmd += ["-x", proxy_url, "--noproxy", ""]
+        else:
+            cmd += ["--noproxy", "*"]
         cmd.append(url)
         try:
             result = subprocess.run(cmd, capture_output=True, text=True, timeout=10)
@@ -231,12 +271,93 @@ def get_full_status():
     return {"connected": False, "proxy": False, "profile": active_name or ""}
 
 
+def _run_git(args):
+    """Run git command in project dir."""
+    try:
+        r = subprocess.run(["git"] + args, cwd=str(PROJECT_DIR), capture_output=True, text=True, timeout=30)
+        return r.returncode, r.stdout.strip(), r.stderr.strip()
+    except Exception as e:
+        return 1, "", str(e)
+
+
+def git_status():
+    code, out, err = _run_git(["status", "--porcelain"])
+    if code != 0 and "not a git repository" in err:
+        return {"initialized": False}
+    _, branch_out, _ = _run_git(["branch", "--show-current"])
+    _, remote_out, _ = _run_git(["remote", "-v"])
+    has_remote = "origin" in remote_out
+    changed = len([l for l in out.splitlines() if l.strip()]) if out else 0
+    return {"initialized": True, "branch": branch_out, "hasRemote": has_remote, "changed": changed}
+
+
+def git_commit_push(message):
+    # Add all tracked + new files (except gitignored)
+    code, _, err = _run_git(["add", "-A"])
+    if code != 0:
+        return {"ok": False, "error": f"git add: {err}"}
+    code, out, err = _run_git(["status", "--porcelain"])
+    if not out.strip():
+        return {"ok": False, "error": "Нет изменений для коммита"}
+    code, _, err = _run_git(["commit", "-m", message])
+    if code != 0:
+        return {"ok": False, "error": f"git commit: {err}"}
+    code, _, err = _run_git(["push"])
+    if code != 0:
+        return {"ok": False, "error": f"git push: {err}", "committed": True}
+    return {"ok": True, "message": "Commit + push выполнен"}
+
+
+def git_pull():
+    code, out, err = _run_git(["pull"])
+    if code != 0:
+        return {"ok": False, "error": f"git pull: {err}"}
+    # After pull, redeploy files to ~/.proxy
+    deploy_to_proxy_dir()
+    return {"ok": True, "message": f"Pull выполнен. {out}"}
+
+
+def deploy_to_proxy_dir():
+    """Copy project files to ~/.proxy after pull."""
+    import shutil
+    dst = PROXY_DIR
+    for f in ["bin/proxy-check.sh", "bin/proxy-switch.sh", "bin/proxy-server.py"]:
+        src = PROJECT_DIR / f
+        if src.exists():
+            shutil.copy2(str(src), str(dst / f))
+    web_src = PROJECT_DIR / "web" / "index.html"
+    if web_src.exists():
+        shutil.copy2(str(web_src), str(dst / "web" / "index.html"))
+    init_src = PROJECT_DIR / "init.sh"
+    if init_src.exists():
+        shutil.copy2(str(init_src), str(dst / "init.sh"))
+    env_src = PROJECT_DIR / ".env"
+    if env_src.exists():
+        shutil.copy2(str(env_src), str(dst / ".env"))
+
+
 class ProxyHandler(http.server.SimpleHTTPRequestHandler):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, directory=str(WEB_DIR), **kwargs)
 
+    def _require_auth(self):
+        """Return True if request should be blocked (not authenticated)."""
+        if _check_auth(self):
+            return False
+        self._json_response({"error": "unauthorized"}, 401)
+        return True
+
     def do_GET(self):
         parsed = urllib.parse.urlparse(self.path)
+
+        # Auth check endpoint (no auth required)
+        if parsed.path == "/api/auth/check":
+            return self._json_response({"authenticated": _check_auth(self)})
+
+        # Login page and static assets don't require auth
+        # All /api/ endpoints require auth
+        if parsed.path.startswith("/api/") and self._require_auth():
+            return
 
         if parsed.path == "/api/status":
             return self._json_response(get_full_status())
@@ -324,6 +445,37 @@ class ProxyHandler(http.server.SimpleHTTPRequestHandler):
     def do_POST(self):
         parsed = urllib.parse.urlparse(self.path)
 
+        # Login endpoint (no auth required)
+        if parsed.path == "/api/auth/login":
+            length = int(self.headers.get("Content-Length", 0))
+            body = self.rfile.read(length).decode() if length else ""
+            try:
+                data = json.loads(body)
+            except json.JSONDecodeError:
+                return self._json_response({"ok": False, "error": "Bad JSON"}, 400)
+            pw = data.get("password", "")
+            if pw == APP_PASSWORD:
+                token = _make_token()
+                self.send_response(200)
+                self.send_header("Content-Type", "application/json; charset=utf-8")
+                cookie = http.cookies.SimpleCookie()
+                cookie["session"] = token
+                cookie["session"]["path"] = "/"
+                cookie["session"]["httponly"] = True
+                cookie["session"]["samesite"] = "Strict"
+                cookie["session"]["max-age"] = str(86400 * 30)  # 30 days
+                self.send_header("Set-Cookie", cookie["session"].OutputString())
+                resp = json.dumps({"ok": True}).encode()
+                self.send_header("Content-Length", str(len(resp)))
+                self.end_headers()
+                self.wfile.write(resp)
+                return
+            return self._json_response({"ok": False, "error": "Неверный пароль"}, 403)
+
+        # All other POST endpoints require auth
+        if self._require_auth():
+            return
+
         if parsed.path == "/api/add":
             length = int(self.headers.get("Content-Length", 0))
             body = self.rfile.read(length).decode() if length else ""
@@ -361,6 +513,19 @@ class ProxyHandler(http.server.SimpleHTTPRequestHandler):
             if ok:
                 return self._json_response({"ok": True, "name": name})
             return self._json_response({"ok": False, "error": err}, 400)
+
+        if parsed.path == "/api/git/commit":
+            length = int(self.headers.get("Content-Length", 0))
+            body = self.rfile.read(length).decode() if length else "{}"
+            try:
+                data = json.loads(body)
+            except json.JSONDecodeError:
+                data = {}
+            msg = data.get("message", "Update proxy config")
+            return self._json_response(git_commit_push(msg))
+
+        if parsed.path == "/api/git/pull":
+            return self._json_response(git_pull())
 
         return self._json_response({"error": "Not found"}, 404)
 
