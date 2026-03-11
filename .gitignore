@@ -1,0 +1,14 @@
+# Конфиг с реальными паролями — НИКОГДА не коммитить
+profiles.conf
+active
+
+# macOS
+.DS_Store
+
+# Python
+__pycache__/
+*.pyc
+
+# IDE
+.idea/
+.vscode/

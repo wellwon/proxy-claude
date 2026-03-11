@@ -1,0 +1,9 @@
+# Proxy Profiles — один профиль на строку
+# Формат: NAME|PROTOCOL|USER:PASS@HOST:PORT
+# NAME — короткое имя (без пробелов)
+# PROTOCOL — http или socks5
+#
+# Примеры:
+# us-buffalo|http|user:pass@23.229.62.156:8000
+# de-berlin|http|user:pass@185.1.2.3:8080
+# uk-london|socks5|user:pass@51.1.2.3:1080
