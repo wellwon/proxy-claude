@@ -45,8 +45,7 @@ alias pxf="proxy-check.sh --full"                  # полный отчёт
 alias pxl="proxy-switch.sh --list"                  # список профилей
 alias pxoff="source proxy-switch.sh --off"          # выключить
 alias pxon="_proxy_load && proxy-check.sh"          # перечитать из конфига
-export PROXY_PROJECT_DIR="$HOME/PycharmProjects/🚧 One Time Projects/Proxy Claude"
-alias pxweb="PROJECT_DIR=\"\$PROXY_PROJECT_DIR\" PROXY_DIR=\"\$PROXY_DIR\" python3 \$PROXY_DIR/bin/proxy-server.py &"
+alias pxweb="PROXY_DIR=\"\$PROXY_DIR\" python3 \$PROXY_DIR/bin/proxy-server.py &"
 pxto() { source proxy-switch.sh "$1"; }             # переключить: pxto de-berlin
 pxsync() { _proxy_load && proxy-check.sh; }         # синхронизировать с web-панелью
 
