@@ -1,13 +1,10 @@
 #!/usr/bin/env python3
 """proxy-server.py — WellWon Proxy Manager (localhost:7777)"""
 
-import hashlib
-import http.cookies
 import http.server
 import json
 import os
 import re
-import secrets
 import subprocess
 import urllib.parse
 from pathlib import Path
@@ -20,38 +17,8 @@ GEO_CACHE = PROXY_DIR / "geo-cache.json"
 WEB_DIR = PROXY_DIR / "web"
 PORT = 7777
 
-# ── Auth ──
-def _load_env():
-    """Load .env from project dir or PROXY_DIR."""
-    for d in [PROJECT_DIR, PROXY_DIR]:
-        env_file = d / ".env"
-        if env_file.exists():
-            for line in env_file.read_text().splitlines():
-                line = line.strip()
-                if not line or line.startswith("#"):
-                    continue
-                if "=" in line:
-                    k, v = line.split("=", 1)
-                    os.environ.setdefault(k.strip(), v.strip())
-            return
 
-_load_env()
-APP_PASSWORD = os.environ.get("APP_PASSWORD", "")
-# Session token: random per server start, valid only if password matches
-_SESSION_SECRET = secrets.token_hex(16)
 
-def _make_token():
-    """Create a session token tied to the current password."""
-    return hashlib.sha256((_SESSION_SECRET + APP_PASSWORD).encode()).hexdigest()
-
-def _check_auth(handler):
-    """Return True if request is authenticated."""
-    if not APP_PASSWORD:
-        return True  # no password set — open access
-    cookie_header = handler.headers.get("Cookie", "")
-    cookies = http.cookies.SimpleCookie(cookie_header)
-    token = cookies.get("session")
-    return token is not None and token.value == _make_token()
 
 # In-memory geo cache: {profile_name: {countryCode, country, city, ...}}
 _geo_cache = {}
@@ -340,24 +307,8 @@ class ProxyHandler(http.server.SimpleHTTPRequestHandler):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, directory=str(WEB_DIR), **kwargs)
 
-    def _require_auth(self):
-        """Return True if request should be blocked (not authenticated)."""
-        if _check_auth(self):
-            return False
-        self._json_response({"error": "unauthorized"}, 401)
-        return True
-
     def do_GET(self):
         parsed = urllib.parse.urlparse(self.path)
-
-        # Auth check endpoint (no auth required)
-        if parsed.path == "/api/auth/check":
-            return self._json_response({"authenticated": _check_auth(self)})
-
-        # Login page and static assets don't require auth
-        # All /api/ endpoints require auth
-        if parsed.path.startswith("/api/") and self._require_auth():
-            return
 
         if parsed.path == "/api/status":
             return self._json_response(get_full_status())
@@ -444,37 +395,6 @@ class ProxyHandler(http.server.SimpleHTTPRequestHandler):
 
     def do_POST(self):
         parsed = urllib.parse.urlparse(self.path)
-
-        # Login endpoint (no auth required)
-        if parsed.path == "/api/auth/login":
-            length = int(self.headers.get("Content-Length", 0))
-            body = self.rfile.read(length).decode() if length else ""
-            try:
-                data = json.loads(body)
-            except json.JSONDecodeError:
-                return self._json_response({"ok": False, "error": "Bad JSON"}, 400)
-            pw = data.get("password", "")
-            if pw == APP_PASSWORD:
-                token = _make_token()
-                self.send_response(200)
-                self.send_header("Content-Type", "application/json; charset=utf-8")
-                cookie = http.cookies.SimpleCookie()
-                cookie["session"] = token
-                cookie["session"]["path"] = "/"
-                cookie["session"]["httponly"] = True
-                cookie["session"]["samesite"] = "Strict"
-                cookie["session"]["max-age"] = str(86400 * 30)  # 30 days
-                self.send_header("Set-Cookie", cookie["session"].OutputString())
-                resp = json.dumps({"ok": True}).encode()
-                self.send_header("Content-Length", str(len(resp)))
-                self.end_headers()
-                self.wfile.write(resp)
-                return
-            return self._json_response({"ok": False, "error": "Неверный пароль"}, 403)
-
-        # All other POST endpoints require auth
-        if self._require_auth():
-            return
 
         if parsed.path == "/api/add":
             length = int(self.headers.get("Content-Length", 0))
