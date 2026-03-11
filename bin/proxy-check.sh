@@ -31,12 +31,10 @@ region=$(echo "$geo" | sed -n 's/.*"regionName":"\([^"]*\)".*/\1/p')
 isp=$(echo "$geo" | sed -n 's/.*"isp":"\([^"]*\)".*/\1/p')
 org=$(echo "$geo" | sed -n 's/.*"org":"\([^"]*\)".*/\1/p')
 
-# Флаг страны (emoji)
+# Флаг страны (emoji) — через python для кроссплатформенности
 flag=""
 if [ -n "$cc" ]; then
-    c1=$(printf '%d' "'$(echo "$cc" | cut -c1)")
-    c2=$(printf '%d' "'$(echo "$cc" | cut -c2)")
-    flag=$(printf "\\U$(printf '%08x' $((c1 - 65 + 127462)))\\U$(printf '%08x' $((c2 - 65 + 127462)))")
+    flag=$(python3 -c "print(''.join(chr(0x1F1E6 + ord(c) - ord('A')) for c in '$cc'))" 2>/dev/null)
 fi
 
 # Проверка: есть ли прокси-переменные?
